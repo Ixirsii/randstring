@@ -1,5 +1,5 @@
 """
-randstring is a python module that generates a randomized string.
+rand_string is a python module that generates a randomized string.
 
 Copyright (c) Ryan Porterfield 2013.
 All rights reserved.
