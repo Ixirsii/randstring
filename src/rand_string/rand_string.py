@@ -1,5 +1,6 @@
 """
-randstring is a python module that generates a randomized string
+Functions to generate random strings with specified lengths and characters.
+
 Copyright (c) Ryan Porterfield 2013.
 All rights reserved.
 
@@ -29,51 +30,45 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 """
 
-import itertools
-from random import SystemRandom
+from random import uniform
+from typing import Mapping, Optional
 
-from charactertables import get_default
+from .character_tables import get_default_charset
 
 
-class StringGenerator():
+def create_string(
+    length: int, character_table: Optional[Mapping[float, str]] = None
+) -> str:
     """
-    Docstring
+    Create a random string of length 'length' using the weighted caracter map
+    'character_table'.
+
+    'character_table' defaults to only lowercase letters if a custom table
+    is not passed.
     """
+    if character_table is None:
+        character_table = get_default_charset()
 
-    # Number of Lines: 3
-    def __init__(self, verbose=False, table_list=get_default(),
-                 rule_set=None):
-        self._verbose = verbose
-        self._rand = SystemRandom()
-        self._table_list = table_list
+    result: str = ""
+    upper_limit: float = next(reversed(character_table.keys()), 0)
 
-    # Number of Lines: 1
-    def create_string(self, length):
-        """
-        TODO: Edit this
-        """
-        pass
+    for _ in range(length):
+        random = uniform(0, upper_limit)
 
-    # Number of Lines: 1
-    def create_strings(self, num_strings, length):
-        """
-        Create 'num_strings' number of strings, each with length 'length'
-        """
-        return [self.create_string(length) for i in range(num_strings)]
+        for key, value in character_table.items():
+            if key >= random:
+                result += value
+                break
 
-    # Number of Lines: 1
-    def get_rand(self):
-        """
-        DOCSTRING
-        """
-        pass
+    return result
 
 
-if __name__ == "__main__":
-    print("You ran this program from the command line. :-)")
-    print("Unfortunately it's supposed to be used as a module and doesn't "
-          "do anything. :-(")
-else:
-    print("Imported randstring")
+def create_strings(
+    lengths: list[int], character_table: Optional[Mapping[float, str]] = None
+) -> list[str]:
+    """
+    Map 'lengths' to a list of random strings each of length 'lengths[i]'
+    """
+    strings = map(lambda length: create_string(length, character_table), lengths)
 
-#
+    return list(strings)
